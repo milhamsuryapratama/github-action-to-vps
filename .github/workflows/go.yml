@@ -25,4 +25,4 @@ jobs:
             cd /projects/github-action-to-vps
             git pull origin main
             go build main.go
-            service github-action-to-vps start
+            systemctl restart github-action-to-vps
