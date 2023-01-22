@@ -27,6 +27,7 @@ jobs:
             cd /root/projects/github-action-to-vps
             git pull origin main
             echo $PATH
-            whoami
+            export PATH=$PATH:$(go env GOPATH)/bin
+            echo $PATH
             go build main.go
             systemctl restart github-action-to-vps
