@@ -39,5 +39,6 @@ jobs:
         KEY: ${{ secrets.SSH_KEY }}
         script: |
             docker pull ${{ secrets.DOCKER_USER }}/github-action-to-vps
+            docker stop github-action-to-vps
             docker rm github-action-to-vps
             docker run -d -p 8000:3000 --name github-action-to-vps ${{ secrets.DOCKER_USER }}/github-action-to-vps
