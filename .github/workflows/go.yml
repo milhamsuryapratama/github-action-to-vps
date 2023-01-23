@@ -15,7 +15,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Build Image
+      run: |
+        docker build . -t ${{ secrets.DOCKER_USER }}/github-action-to-vps
+
+    - name: Push Image
+      run: |
+        docker push ${{ secrets.DOCKER_USER }}/github-action-to-vps
+
     - name: Executing remote command
       uses: appleboy/ssh-action@master
       with:
@@ -24,7 +38,7 @@ jobs:
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.SSH_KEY }}
         script: |
-            cd /root/projects/github-action-to-vps
-            git pull origin main
-            go build main.go
-            systemctl restart github-action-to-vps
+            docker pull ${{ secrets.DOCKER_USER }}/github-action-to-vps
+            docker stop github-action-to-vps
+            docker rm github-action-to-vps
+            docker run -d -p 8000:3000 --name github-action-to-vps ${{ secrets.DOCKER_USER }}/github-action-to-vps
